@@ -1,0 +1,15 @@
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\bin\Debug\net8.0\Test-LinkedinAPI.exe
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\bin\Debug\net8.0\Test-LinkedinAPI.deps.json
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\bin\Debug\net8.0\Test-LinkedinAPI.runtimeconfig.json
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\bin\Debug\net8.0\Test-LinkedinAPI.dll
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\bin\Debug\net8.0\Test-LinkedinAPI.pdb
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\Test-LinkedinAPI.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\Test-LinkedinAPI.AssemblyInfoInputs.cache
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\Test-LinkedinAPI.AssemblyInfo.cs
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\Test-LinkedinAPI.csproj.CoreCompileInputs.cache
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\Test-LinkedinAPI.sourcelink.json
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\Test-LinkedinAPI.dll
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\refint\Test-LinkedinAPI.dll
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\Test-LinkedinAPI.pdb
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\Test-LinkedinAPI.genruntimeconfig.cache
+C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\ref\Test-LinkedinAPI.dll
