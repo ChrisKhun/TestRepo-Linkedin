@@ -1,7 +1,6 @@
 # LinkedIn Webscraper (Unipile API)
 
 A simple personal project for experimenting with retrieving LinkedIn profile data using the Unipile API.
----
 
 # Documentation Links
 
