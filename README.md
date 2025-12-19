@@ -2,7 +2,7 @@
 
 A simple personal project for experimenting with retrieving LinkedIn profile data using the Unipile API.
 
-[(https://developer.unipile.com/docs/linkedin-search)](https://developer.unipile.com/docs/linkedin-search)
+[Unipile LinkedIn Documentation](https://developer.unipile.com/docs/linkedin-search)
 ---
 
 ## What This Project Does
