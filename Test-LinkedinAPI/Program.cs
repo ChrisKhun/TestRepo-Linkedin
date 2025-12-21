@@ -245,12 +245,15 @@ static async Task SearchLinkedInByUrl(HttpClient http, string dsn, string accoun
                 item.TryGetProperty("title", out var tt) ? tt.GetString() :
                 null;
 
-            Console.WriteLine($"Type: {type}");
-            if (!string.IsNullOrWhiteSpace(id)) Console.WriteLine($"ID: {id}");
-            if (!string.IsNullOrWhiteSpace(name)) Console.WriteLine($"Name: {name}");
-            if (!string.IsNullOrWhiteSpace(headline)) Console.WriteLine($"Headline/Title: {headline}");
-            if (!string.IsNullOrWhiteSpace(profileUrl)) Console.WriteLine($"URL: {profileUrl}");
-            Console.WriteLine();
+            if (!string.IsNullOrEmpty(profileUrl))
+            {
+                Console.WriteLine($"Type: {type}");
+                if (!string.IsNullOrWhiteSpace(id)) Console.WriteLine($"ID: {id}");
+                if (!string.IsNullOrWhiteSpace(name)) Console.WriteLine($"Name: {name}");
+                if (!string.IsNullOrWhiteSpace(headline)) Console.WriteLine($"Headline/Title: {headline}");
+                if (!string.IsNullOrWhiteSpace(profileUrl)) Console.WriteLine($"URL: {profileUrl}");
+                Console.WriteLine();
+            }
         }
     }
     catch (Exception ex)
