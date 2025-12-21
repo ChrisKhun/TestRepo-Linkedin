@@ -11,7 +11,16 @@
 using System.Net;
 using DotNetEnv;
 using System.Text.Json;
-
+// ============================================================================
+//                            File Helper Function (to find .env)
+// ============================================================================
+static string FindProjectRoot()
+{
+    var dir = new DirectoryInfo(AppContext.BaseDirectory);
+    while (dir != null && dir.GetFiles("*.csproj").Length == 0)
+        dir = dir.Parent;
+    return dir?.FullName ?? Directory.GetCurrentDirectory();
+}
 
 // ============================================================================
 //                                    Setup
@@ -64,10 +73,8 @@ try
                 Environment.Exit(0);
             }
 
-            await SearchEmployeesByCompanyName(http, dsn, unipileAccountId, companyInput, topN: 10);
-
+            await SearchEmployeesByCompanyName(http, dsn, unipileAccountId, companyInput);
         }
-
     }
     else
     {
@@ -83,20 +90,202 @@ catch (Exception ex)
 }
 
 // ============================================================================
-//                            File Helper Function (to find .env)
+//                      Find Company Employee w/ Linkedin
 // ============================================================================
-static string FindProjectRoot()
+static async Task SearchEmployeesByCompanyName(HttpClient http, string dsn, string accountId, string companyName)
 {
-    var dir = new DirectoryInfo(AppContext.BaseDirectory);
-    while (dir != null && dir.GetFiles("*.csproj").Length == 0)
-        dir = dir.Parent;
-    return dir?.FullName ?? Directory.GetCurrentDirectory();
+    var companyId = await GetCompanyIdFromName(http, dsn, accountId, companyName);
+
+    if (string.IsNullOrWhiteSpace(companyId))
+    {
+        Console.WriteLine("Could not determine company id from company search.");
+        return;
+    }
+
+    var encoded = Uri.EscapeDataString(companyName.Trim());
+
+    // currentCompany expects a JSON-like array in the URL
+    var employeesUrl =
+        $"https://www.linkedin.com/search/results/people/?keywords={encoded}" +
+        $"&currentCompany=%5B{Uri.EscapeDataString(companyId)}%5D";
+
+    await SearchLinkedInByUrl(http, dsn, accountId, employeesUrl, companyName);
 }
 
 // ============================================================================
-//                  Search For LinkedIn Company People By URL
+//                        Searches w/ Pages & export to .csv
 // ============================================================================
+static async Task SearchLinkedInByUrl(HttpClient http, string dsn, string accountId, string searchUrl, string companyName)
+{
+    try
+    {
+        // get user input
+        Console.Write("Enter keyword(s) to filter results (ex: software engineering). Leave blank for no filter: ");
+        var keywordInput = Console.ReadLine();
 
+        // set keyword
+        // Split by spaces, keep unique terms, lowercase for matching
+        var keywords = string.IsNullOrWhiteSpace(keywordInput)
+            ? Array.Empty<string>()
+            : keywordInput
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(w => w.ToLowerInvariant())
+                .Distinct()
+                .ToArray();
+
+        string? cursor = null;
+        int page = 0;
+
+        var endpoint =
+            $"{dsn.TrimEnd('/')}/api/v1/linkedin/search" +
+            $"?account_id={Uri.EscapeDataString(accountId)}";
+
+        // gets profiles for CSV export
+        var profiles = new List<LinkedInProfile>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // create cancel signal
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
+
+        Console.WriteLine("Press ANY key to stop and save progress...\n");
+
+        // background key listener
+        _ = Task.Run(() =>
+        {
+            Console.ReadKey(true);
+            cts.Cancel();
+        });
+        
+        int emptyMatchPages = 0;
+        const int maxEmptyMatchPages = 50; // change if needed
+        
+        while (true)
+        {
+            // allow stopping between pages
+            if (token.IsCancellationRequested)
+            {
+                Console.WriteLine("\nStopping! Saving progress...");
+                break;
+            }
+
+            page++;
+
+            // checks for cursor
+            object payload = string.IsNullOrWhiteSpace(cursor)
+                ? new { url = searchUrl }
+                : new { url = searchUrl, cursor = cursor };
+
+            // converts payload into json for httpclient
+            var json = JsonSerializer.Serialize(payload);
+            using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+            // sends http post request to server & wait for reponse
+            using var response = await http.PostAsync(endpoint, content);
+            var body = await response.Content.ReadAsStringAsync();
+
+            // checks if response is valid
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"LinkedIn search failed (HTTP {(int)response.StatusCode} {response.ReasonPhrase})");
+                Console.WriteLine($"Response: {body}");
+                break;
+            }
+
+            // parses json
+            using var doc = JsonDocument.Parse(body);
+
+            // ensures api response has items
+            if (!doc.RootElement.TryGetProperty("items", out var items) || items.ValueKind != JsonValueKind.Array)
+            {
+                Console.WriteLine("LinkedIn search succeeded, but response didn't contain an 'items' array.");
+                Console.WriteLine($"Raw response: {body}");
+                break;
+            }
+
+            int pageAdded = 0;
+            
+            // loops through and sends profile information to csv
+            foreach (var item in items.EnumerateArray())
+            {
+                var type = item.TryGetProperty("type", out var t) ? t.GetString() : "unknown";
+                var id = item.TryGetProperty("id", out var i) ? i.GetString() : null;
+                var name = item.TryGetProperty("name", out var n) ? n.GetString() : null;
+
+                var profileUrl =
+                    item.TryGetProperty("profile_url", out var p) ? p.GetString() :
+                    item.TryGetProperty("url", out var u) ? u.GetString() :
+                    null;
+
+                var headline =
+                    item.TryGetProperty("headline", out var h) ? h.GetString() :
+                    item.TryGetProperty("title", out var tt) ? tt.GetString() :
+                    null;
+
+                // checks if has url so its accessible
+                if (!string.IsNullOrWhiteSpace(profileUrl))
+                {
+                    // matches input with any keyword on profile
+                    if (keywords.Length > 0)
+                    {
+                        var text = $"{name} {headline}".ToLowerInvariant();
+                        bool matchesAny = keywords.Any(word => text.Contains(word));
+                        if (!matchesAny)
+                            continue;
+                    }
+                    profiles.Add(new LinkedInProfile(type, id, name, headline, profileUrl));
+                    pageAdded++;
+                }
+            }
+            
+            if (pageAdded == 0)
+            {
+                emptyMatchPages++;
+                Console.WriteLine($"No matches this page ({emptyMatchPages}/{maxEmptyMatchPages}).");
+                if (emptyMatchPages >= maxEmptyMatchPages)
+                {
+                    Console.WriteLine("\nStopping early: too many pages with no matches.");
+                    break;
+                }
+            }
+            else
+            {
+                emptyMatchPages = 0;
+            }
+
+            Console.WriteLine($"Page {page} complete | added {pageAdded} | total {profiles.Count}");
+
+            cursor = doc.RootElement.TryGetProperty("cursor", out var c) ? c.GetString() : null;
+
+            if (string.IsNullOrWhiteSpace(cursor))
+            {
+                Console.WriteLine("\nSearch complete.");
+                break;
+            }
+        }
+
+        // Export whatever is collected to CSV
+        var fileName = $"{companyName}_results_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+        var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
+
+        if (profiles.Count > 0)
+        {
+        await ExportProfilesToCsvAsync(profiles, filePath);
+        Console.WriteLine($"\nExported {profiles.Count} profiles to: " + filePath);
+        } else
+        {
+            Console.WriteLine("Not exporting. 0 profiles found.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error running LinkedIn search: {ex.Message}");
+    }
+}
+
+// ============================================================================
+//                       Company Search & Return First ID
+// ============================================================================
 static async Task<string?> GetCompanyIdFromName(HttpClient http, string dsn, string accountId, string companyName)
 {
     var encoded = Uri.EscapeDataString(companyName.Trim());
@@ -131,7 +320,7 @@ static async Task<string?> GetCompanyIdFromName(HttpClient http, string dsn, str
         return null;
     }
 
-    // Print top 5 companies and auto-pick 1
+    // Displays searched company's details
     Console.WriteLine("\nCompany Results:");
     Console.WriteLine("----------------");
     int shown = 0;
@@ -154,111 +343,47 @@ static async Task<string?> GetCompanyIdFromName(HttpClient http, string dsn, str
             shown++;
         }
 
-        if (shown >= 5) break;
+        if (shown >= 1) break;
     }
-
-    // Pick the first company id
+    
     var first = items.GetArrayLength() > 0 ? items[0] : default;
     if (first.ValueKind == JsonValueKind.Undefined) return null;
 
     return first.TryGetProperty("id", out var firstId) ? firstId.GetString() : null;
 }
 
-
-static async Task SearchEmployeesByCompanyName(HttpClient http, string dsn, string accountId, string companyName, int topN = 10)
-{
-    var companyId = await GetCompanyIdFromName(http, dsn, accountId, companyName);
-
-    if (string.IsNullOrWhiteSpace(companyId))
-    {
-        Console.WriteLine("Could not determine company id from company search.");
-        return;
-    }
-
-    var encoded = Uri.EscapeDataString(companyName.Trim());
-
-    // currentCompany expects a JSON-like array in the URL
-    var employeesUrl =
-        $"https://www.linkedin.com/search/results/people/?keywords={encoded}" +
-        $"&currentCompany=%5B{Uri.EscapeDataString(companyId)}%5D";
-
-    await SearchLinkedInByUrl(http, dsn, accountId, employeesUrl);
-}
-
 // ============================================================================
-//                             Search For LinkIn By URL
+//                              csv helper
 // ============================================================================
 
-static async Task SearchLinkedInByUrl(HttpClient http, string dsn, string accountId, string searchUrl)
+static string CsvEscape(string? value)
 {
-    try
-    {
-        var endpoint =
-            $"{dsn.TrimEnd('/')}/api/v1/linkedin/search" +
-            $"?account_id={Uri.EscapeDataString(accountId)}";
-        var payload = new { url = searchUrl };
-
-        var json = JsonSerializer.Serialize(payload);
-        using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-        using var response = await http.PostAsync(endpoint, content);
-        var body = await response.Content.ReadAsStringAsync();
-
-        if (!response.IsSuccessStatusCode)
-        {
-            Console.WriteLine($"LinkedIn search failed (HTTP {(int)response.StatusCode} {response.ReasonPhrase})");
-            Console.WriteLine($"Response: {body}");
-            return;
-        }
-
-        // if successful returns an object with array of results 
-        using var doc = JsonDocument.Parse(body);
-
-        if (!doc.RootElement.TryGetProperty("items", out var items) || items.ValueKind != JsonValueKind.Array)
-        {
-            Console.WriteLine("LinkedIn search succeeded, but response didn't contain an 'items' array.");
-            Console.WriteLine($"Raw response: {body}");
-            return;
-        }
-
-        Console.WriteLine("\nLinkedIn Search Results:");
-        Console.WriteLine("------------------------");
-        Console.WriteLine($"Count: {items.GetArrayLength()}");
-        Console.WriteLine();
-
-        foreach (var item in items.EnumerateArray())
-        {
-            // type id name
-            var type = item.TryGetProperty("type", out var t) ? t.GetString() : "unknown";
-            var id = item.TryGetProperty("id", out var i) ? i.GetString() : null;
-            var name = item.TryGetProperty("name", out var n) ? n.GetString() : null;
-
-            // url
-            var profileUrl =
-                item.TryGetProperty("profile_url", out var p) ? p.GetString() :
-                item.TryGetProperty("url", out var u) ? u.GetString() :
-                null;
-
-            // headline 
-            var headline =
-                item.TryGetProperty("headline", out var h) ? h.GetString() :
-                item.TryGetProperty("title", out var tt) ? tt.GetString() :
-                null;
-
-            if (!string.IsNullOrEmpty(profileUrl))
-            {
-                Console.WriteLine($"Type: {type}");
-                if (!string.IsNullOrWhiteSpace(id)) Console.WriteLine($"ID: {id}");
-                if (!string.IsNullOrWhiteSpace(name)) Console.WriteLine($"Name: {name}");
-                if (!string.IsNullOrWhiteSpace(headline)) Console.WriteLine($"Headline/Title: {headline}");
-                if (!string.IsNullOrWhiteSpace(profileUrl)) Console.WriteLine($"URL: {profileUrl}");
-                Console.WriteLine();
-            }
-        }
-    }
-    catch (Exception ex)
-    {
-        // exception check
-        Console.WriteLine($"Error running LinkedIn search: {ex.Message}");
-    }
+    value ??= "";
+    var needsQuotes = value.Contains(',') || value.Contains('"') || value.Contains('\n') || value.Contains('\r');
+    value = value.Replace("\"", "\"\"");
+    return needsQuotes ? $"\"{value}\"" : value;
 }
+
+static async Task ExportProfilesToCsvAsync(
+    IEnumerable<LinkedInProfile> profiles,
+    string filePath)
+{
+    var sb = new System.Text.StringBuilder();
+    sb.AppendLine("type,id,name,headline,url");
+
+    foreach (var p in profiles)
+    {
+        // this is temp just to make sure csv works will format to [name, company, url, contact etc..]
+        // need to figure out how to get contacts
+        sb.Append(CsvEscape(p.Type)).Append(',')
+            .Append(CsvEscape(p.Id)).Append(',')
+            .Append(CsvEscape(p.Name)).Append(',')
+            .Append(CsvEscape(p.Headline)).Append(',')
+            .Append(CsvEscape(p.Url)).AppendLine();
+    }
+
+    await File.WriteAllTextAsync(filePath, sb.ToString());
+}
+
+record LinkedInProfile( string? Type, string? Id, string? Name, string? Headline, string? Url );
+
