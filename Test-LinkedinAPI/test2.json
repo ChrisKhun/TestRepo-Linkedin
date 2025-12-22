@@ -1,0 +1,22 @@
+{
+    "object": "LinkedinSearch",
+    "items": [
+        {
+            "type": "PEOPLE",
+            "industry": null,
+            "id": "ACoAACnVjhcBsxfgdW4owFoGgMFUGNp9pSrYxiI",
+            "name": "G. Reynold Counts",
+            "member_urn": "urn:li:member:701861399",
+            "public_identifier": "reynoldcounts",
+            "profile_url": "https://www.linkedin.com/in/reynoldcounts?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACnVjhcBsxfgdW4owFoGgMFUGNp9pSrYxiI",
+            "public_profile_url": "https://www.linkedin.com/in/reynoldcounts?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACnVjhcBsxfgdW4owFoGgMFUGNp9pSrYxiI",
+            "profile_picture_url": "https://media.licdn.com/dms/image/v2/C4E03AQElvM_CBqjVnQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1608576459482?e=1767830400&v=beta&t=gwPjaKmWKlcrehq-o1c_25VrVJCBQCoUpGdFEKabjqo",
+            "profile_picture_url_large": "https://media.licdn.com/dms/image/v2/C4E03AQElvM_CBqjVnQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1608576459482?e=1767830400&v=beta&t=gwPjaKmWKlcrehq-o1c_25VrVJCBQCoUpGdFEKabjqo",
+            "network_distance": "DISTANCE_2",
+            "location": "Columbus, GA",
+            "headline": "Field Access Lead - Pfizer",
+            "verified": true,
+            "shared_connections_count": 1
+        }
+    ]
+}

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Test-LinkedinAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da95e07db5735f4a39e0d92a7f7fbbdc19f2bc10")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e9cbbf51b45117feb9b5c9d17f29098ba83e054")]
 [assembly: System.Reflection.AssemblyProductAttribute("Test-LinkedinAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Test-LinkedinAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

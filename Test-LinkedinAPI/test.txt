@@ -1,0 +1,64 @@
+﻿{
+    "object": "LinkedinSearch",
+    "items": [
+        {
+            "type": "PEOPLE",
+            "industry": null,
+            "id": "ACoAACnVjhcBsxfgdW4owFoGgMFUGNp9pSrYxiI",
+            "name": "G. Reynold Counts",
+            "member_urn": "urn:li:member:701861399",
+            "public_identifier": "reynoldcounts",
+            "profile_url": "https://www.linkedin.com/in/reynoldcounts?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACnVjhcBsxfgdW4owFoGgMFUGNp9pSrYxiI",
+            "public_profile_url": "https://www.linkedin.com/in/reynoldcounts?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACnVjhcBsxfgdW4owFoGgMFUGNp9pSrYxiI",
+            "profile_picture_url": "https://media.licdn.com/dms/image/v2/C4E03AQElvM_CBqjVnQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1608576459482?e=1767830400&v=beta&t=gwPjaKmWKlcrehq-o1c_25VrVJCBQCoUpGdFEKabjqo",
+            "profile_picture_url_large": "https://media.licdn.com/dms/image/v2/C4E03AQElvM_CBqjVnQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1608576459482?e=1767830400&v=beta&t=gwPjaKmWKlcrehq-o1c_25VrVJCBQCoUpGdFEKabjqo",
+            "network_distance": "DISTANCE_2",
+            "location": "Columbus, GA",
+            "headline": "Field Access Lead - Pfizer",
+            "verified": true,
+            "shared_connections_count": 1
+        },
+        {
+            "type": "PEOPLE",
+            "industry": null,
+            "id": "ACoAAAY7BwAB8kAZ7UoSt4TDuOGbvBID1pj4VDA",
+            "name": "Terry Cole",
+            "member_urn": "urn:li:member:104531712",
+            "public_identifier": "terry-cole-a800102b",
+            "profile_url": "https://www.linkedin.com/in/terry-cole-a800102b?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAY7BwAB8kAZ7UoSt4TDuOGbvBID1pj4VDA",
+            "public_profile_url": "https://www.linkedin.com/in/terry-cole-a800102b?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAY7BwAB8kAZ7UoSt4TDuOGbvBID1pj4VDA",
+            "profile_picture_url": "https://media.licdn.com/dms/image/v2/C4E03AQE26NXfQeybsw/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1590065028657?e=1767830400&v=beta&t=pJo3-nJO7QypmxwcFbevRlXQrTRzi0GSEnsF_CLaDFY",
+            "profile_picture_url_large": "https://media.licdn.com/dms/image/v2/C4E03AQE26NXfQeybsw/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1590065028657?e=1767830400&v=beta&t=pJo3-nJO7QypmxwcFbevRlXQrTRzi0GSEnsF_CLaDFY",
+            "network_distance": "DISTANCE_2",
+            "location": "Columbus, GA",
+            "headline": "Regional Oncology Specialist at Exact Sciences",
+            "shared_connections_count": 1
+        },
+        {
+            "type": "PEOPLE",
+            "industry": null,
+            "id": "ACoAAAIYbOUBq6d2xYoDOM3hnplroP1Wt5zLgWE",
+            "name": "Terry Cole",
+            "member_urn": "urn:li:member:35155173",
+            "public_identifier": "terry-cole-519934b",
+            "profile_url": "https://www.linkedin.com/in/terry-cole-519934b?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAIYbOUBq6d2xYoDOM3hnplroP1Wt5zLgWE",
+            "public_profile_url": "https://www.linkedin.com/in/terry-cole-519934b?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAIYbOUBq6d2xYoDOM3hnplroP1Wt5zLgWE",
+            "profile_picture_url": null,
+            "profile_picture_url_large": null,
+            "network_distance": "DISTANCE_2",
+            "location": "Columbus, GA",
+            "headline": "Therapeutic Sales Representative at Pfizer",
+            "verified": true,
+            "shared_connections_count": 1
+        }
+    ],
+    "config": {
+        "url": "https://www.linkedin.com/search/results/people/?keywords=pfizer&currentCompany=%5B1185%5D"
+    },
+    "paging": {
+        "start": 0,
+        "page_count": 3,
+        "total_count": 10
+    },
+    "cursor": "eyJhY2NvdW50X2lkIjoiVkhqZWxqY0tReXVFa3c2VGRlMHgzQSIsImxpbWl0IjoxMCwic3RhcnQiOjMsInVybCI6Imh0dHBzOi8vd3d3LmxpbmtlZGluLmNvbS9zZWFyY2gvcmVzdWx0cy9wZW9wbGUvP2tleXdvcmRzPXBmaXplciZjdXJyZW50Q29tcGFueT0lNUIxMTg1JTVEIn0="
+}

@@ -46,6 +46,7 @@ http.DefaultRequestHeaders.Add("X-API-KEY", apiKey);
 try
 {
     // send and read response from unipile
+    //          https://{subdomain}.unipile.com:{port}/api/v1/users/{identifier}
     var response = await http.GetAsync($"{dsn}/api/v1/accounts");
     var body = await response.Content.ReadAsStringAsync();
 
