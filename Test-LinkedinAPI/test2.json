@@ -2,21 +2,459 @@
     "object": "LinkedinSearch",
     "items": [
         {
+            "object": "SearchResult",
             "type": "PEOPLE",
-            "industry": null,
-            "id": "ACoAACnVjhcBsxfgdW4owFoGgMFUGNp9pSrYxiI",
-            "name": "G. Reynold Counts",
-            "member_urn": "urn:li:member:701861399",
-            "public_identifier": "reynoldcounts",
-            "profile_url": "https://www.linkedin.com/in/reynoldcounts?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACnVjhcBsxfgdW4owFoGgMFUGNp9pSrYxiI",
-            "public_profile_url": "https://www.linkedin.com/in/reynoldcounts?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACnVjhcBsxfgdW4owFoGgMFUGNp9pSrYxiI",
-            "profile_picture_url": "https://media.licdn.com/dms/image/v2/C4E03AQElvM_CBqjVnQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1608576459482?e=1767830400&v=beta&t=gwPjaKmWKlcrehq-o1c_25VrVJCBQCoUpGdFEKabjqo",
-            "profile_picture_url_large": "https://media.licdn.com/dms/image/v2/C4E03AQElvM_CBqjVnQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1608576459482?e=1767830400&v=beta&t=gwPjaKmWKlcrehq-o1c_25VrVJCBQCoUpGdFEKabjqo",
-            "network_distance": "DISTANCE_2",
-            "location": "Columbus, GA",
-            "headline": "Field Access Lead - Pfizer",
+            "id": "string",
+            "public_identifier": "string",
+            "public_profile_url": "string",
+            "profile_url": "string",
+            "profile_picture_url": "string",
+            "profile_picture_url_large": "string",
+            "member_urn": "string",
+            "name": "string",
+            "first_name": "string",
+            "last_name": "string",
+            "network_distance": "SELF",
+            "location": "string",
+            "industry": "string",
+            "keywords_match": "string",
+            "headline": "string",
+            "connections_count": 0,
+            "followers_count": 0,
+            "pending_invitation": true,
+            "can_send_inmail": true,
+            "hiddenCandidate": true,
+            "interestLikelihood": "string",
+            "privacySettings": {
+                "allowConnectionsBrowse": true,
+                "showPremiumSubscriberIcon": true
+            },
+            "skills": [
+                {
+                    "name": "string",
+                    "endorsement_count": 0
+                }
+            ],
+            "recruiter_candidate_id": "string",
+            "recruiter_pipeline_category": "string",
+            "premium": true,
             "verified": true,
-            "shared_connections_count": 1
+            "open_profile": true,
+            "shared_connections_count": 0,
+            "recent_posts_count": 0,
+            "recently_hired": true,
+            "mentioned_in_the_news": true,
+            "last_outreach_activity": {
+                "type": "SEND_MESSAGE",
+                "performed_at": "string"
+            },
+            "current_positions": [
+                {
+                    "company": "string",
+                    "company_id": "string",
+                    "company_url": "string",
+                    "company_description": "string",
+                    "company_headcount": {
+                        "min": 0,
+                        "max": 0
+                    },
+                    "logo": "string",
+                    "description": "string",
+                    "role": "string",
+                    "location": "string",
+                    "industry": [
+                        "string"
+                    ],
+                    "tenure_at_role": {
+                        "years": 0,
+                        "months": 0
+                    },
+                    "tenure_at_company": {
+                        "years": 0,
+                        "months": 0
+                    },
+                    "start": {
+                        "year": 0,
+                        "month": 0
+                    },
+                    "end": {
+                        "year": 0,
+                        "month": 0
+                    },
+                    "skills": [
+                        {
+                            "name": "string",
+                            "endorsement_count": 0
+                        }
+                    ]
+                }
+            ],
+            "education": [
+                {
+                    "degree": "string",
+                    "field_of_study": "string",
+                    "school": "string",
+                    "school_id": "string",
+                    "start": {
+                        "year": 0,
+                        "month": 0
+                    },
+                    "end": {
+                        "year": 0,
+                        "month": 0
+                    },
+                    "school_details": {
+                        "name": "string",
+                        "employeeCount": 0,
+                        "location": "string",
+                        "description": "string",
+                        "url": "string",
+                        "logo": "string"
+                    }
+                }
+            ],
+            "work_experience": [
+                {
+                    "company": "string",
+                    "company_id": "string",
+                    "company_url": "string",
+                    "company_description": "string",
+                    "company_headcount": {
+                        "min": 0,
+                        "max": 0
+                    },
+                    "logo": "string",
+                    "role": "string",
+                    "industry": "string",
+                    "description": "string",
+                    "start": {
+                        "year": 0,
+                        "month": 0
+                    },
+                    "end": {
+                        "year": 0,
+                        "month": 0
+                    },
+                    "skills": [
+                        {
+                            "name": "string",
+                            "endorsement_count": 0
+                        }
+                    ]
+                }
+            ],
+            "certifications": [
+                {
+                    "name": "string",
+                    "organization": "string",
+                    "organization_id": "string",
+                    "url": "string",
+                    "start": {
+                        "year": 0,
+                        "month": "string"
+                    },
+                    "end": {
+                        "year": 0,
+                        "month": "string"
+                    }
+                }
+            ],
+            "projects": [
+                {
+                    "name": "string",
+                    "description": "string",
+                    "skills": [
+                        "string"
+                    ],
+                    "start": {
+                        "year": 0,
+                        "month": "string"
+                    },
+                    "end": {
+                        "year": 0,
+                        "month": "string"
+                    }
+                }
+            ],
+            "interests": "string",
+            "tags": [
+                {
+                    "id": "string",
+                    "name": "string"
+                }
+            ],
+            "notes": [
+                {
+                    "project_id": "string",
+                    "content": "string",
+                    "created_at": 0,
+                    "author": {
+                        "id": "string",
+                        "seat_id": "string",
+                        "first_name": "string",
+                        "last_name": "string",
+                        "public_profile_url": true
+                    }
+                }
+            ]
+        },
+        {
+            "object": "SearchResult",
+            "type": "COMPANY",
+            "id": "string",
+            "name": "string",
+            "location": "string",
+            "profile_url": "string",
+            "industry": "string",
+            "summary": "string",
+            "followers_count": 0,
+            "job_offers_count": 0,
+            "headcount": "string",
+            "revenue_range": {
+                "min": 0,
+                "max": 0,
+                "currency": "string"
+            }
+        },
+        {
+            "object": "SearchResult",
+            "type": "POST",
+            "provider": "LINKEDIN",
+            "id": "string",
+            "social_id": "string",
+            "share_url": "string",
+            "title": "string",
+            "text": "string",
+            "date": "string",
+            "parsed_datetime": "string",
+            "reaction_counter": 0,
+            "comment_counter": 0,
+            "repost_counter": 0,
+            "impressions_counter": 0,
+            "user_reacted": "LIKE",
+            "author": {
+                "public_identifier": "string",
+                "id": "string",
+                "name": "string",
+                "is_company": true,
+                "headline": "string"
+            },
+            "written_by": {
+                "id": "string",
+                "public_identifier": "string",
+                "name": "string"
+            },
+            "permissions": {
+                "can_react": true,
+                "can_share": true,
+                "can_post_comments": true
+            },
+            "is_repost": true,
+            "repost_id": "string",
+            "reposted_by": {
+                "public_identifier": "string",
+                "id": "string",
+                "name": "string",
+                "is_company": true,
+                "headline": "string"
+            },
+            "repost_content": {
+                "id": "string",
+                "date": "string",
+                "parsed_datetime": "string",
+                "author": {
+                    "public_identifier": "string",
+                    "id": "string",
+                    "name": "string",
+                    "is_company": true,
+                    "headline": "string"
+                },
+                "text": "string"
+            },
+            "mentions": [
+                {
+                    "url": "string",
+                    "start": 0,
+                    "length": 0
+                }
+            ],
+            "attachments": [
+                {
+                    "id": "string",
+                    "file_size": 0,
+                    "unavailable": true,
+                    "mimetype": "string",
+                    "url": "string",
+                    "url_expires_at": 0,
+                    "type": "img",
+                    "size": {
+                        "width": 0,
+                        "height": 0
+                    },
+                    "sticker": true
+                },
+                {
+                    "id": "string",
+                    "file_size": 0,
+                    "unavailable": true,
+                    "mimetype": "string",
+                    "url": "string",
+                    "url_expires_at": 0,
+                    "type": "video",
+                    "size": {
+                        "width": 0,
+                        "height": 0
+                    },
+                    "gif": true
+                },
+                {
+                    "id": "string",
+                    "file_size": 0,
+                    "unavailable": true,
+                    "mimetype": "string",
+                    "url": "string",
+                    "url_expires_at": 0,
+                    "type": "audio",
+                    "duration": 0,
+                    "voice_note": true
+                },
+                {
+                    "id": "string",
+                    "file_size": 0,
+                    "unavailable": true,
+                    "mimetype": "string",
+                    "url": "string",
+                    "url_expires_at": 0,
+                    "type": "file",
+                    "file_name": "string"
+                },
+                {
+                    "id": "string",
+                    "file_size": 0,
+                    "unavailable": true,
+                    "mimetype": "string",
+                    "url": "string",
+                    "url_expires_at": 0,
+                    "type": "linkedin_post"
+                },
+                {
+                    "id": "string",
+                    "file_size": 0,
+                    "unavailable": true,
+                    "mimetype": "string",
+                    "url": "string",
+                    "url_expires_at": 0,
+                    "type": "video_meeting",
+                    "starts_at": 0,
+                    "expires_at": 0,
+                    "time_range": 0
+                }
+            ],
+            "poll": {
+                "id": "string",
+                "total_votes_count": 0,
+                "question": "string",
+                "is_open": true,
+                "options": [
+                    {
+                        "id": "string",
+                        "text": "string",
+                        "win": true,
+                        "votes_count": 0
+                    }
+                ]
+            },
+            "group": {
+                "id": "string",
+                "name": "string",
+                "private": true
+            },
+            "analytics": {
+                "impressions": 0,
+                "engagements": 0,
+                "engagement_rate": 0,
+                "clicks": 0,
+                "clickthrough_rate": 0,
+                "page_viewers_from_this_post": 0,
+                "followers_gained_from_this_post": 0,
+                "members_reached": 0
+            }
+        },
+        {
+            "object": "SearchResult",
+            "type": "JOB",
+            "id": "string",
+            "reference_id": "string",
+            "title": "string",
+            "location": "string",
+            "posted_at": "2025-12-31T23:59:59.999Z",
+            "reposted": true,
+            "url": "string",
+            "promoted": true,
+            "benefits": [
+                "string"
+            ],
+            "easy_apply": true,
+            "company": {
+                "id": "string",
+                "public_identifier": "string",
+                "name": "string",
+                "profile_url": "string",
+                "profile_picture_url": "string"
+            }
         }
-    ]
+    ],
+    "config": {
+        "params": {
+            "api": "classic",
+            "category": "people",
+            "keywords": "string",
+            "industry": [
+                "string"
+            ],
+            "location": [
+                "string"
+            ],
+            "profile_language": [
+                "string"
+            ],
+            "network_distance": [
+                1
+            ],
+            "company": [
+                "string"
+            ],
+            "past_company": [
+                "string"
+            ],
+            "school": [
+                "string"
+            ],
+            "service": [
+                "string"
+            ],
+            "connections_of": [
+                "string"
+            ],
+            "followers_of": [
+                "string"
+            ],
+            "open_to": [
+                "proBono"
+            ],
+            "advanced_keywords": {
+                "first_name": "string",
+                "last_name": "string",
+                "title": "string",
+                "company": "string",
+                "school": "string"
+            }
+        }
+    },
+    "paging": {
+        "start": 0,
+        "page_count": 0,
+        "total_count": 0
+    },
+    "cursor": "string"
 }

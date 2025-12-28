@@ -42,3 +42,5 @@ C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\bin\
 C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\bin\Debug\net8.0\Sprache.dll
 C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\Test-LinkedinAPI.csproj.AssemblyReference.cache
 C:\Users\mcjuk\OneDrive\Desktop\Personal\TestRepo-Linkedin\Test-LinkedinAPI\obj\Debug\net8.0\Test-Lin.B2BD66D4.Up2Date
+F:\TestRepo-Linkedin\Test-LinkedinAPI\bin\Debug\net8.0\Newtonsoft.Json.dll
+F:\TestRepo-Linkedin\Test-LinkedinAPI\bin\Debug\net8.0\RestSharp.dll

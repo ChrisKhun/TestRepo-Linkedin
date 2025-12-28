@@ -8,25 +8,26 @@
 // Loads credentials through API from .env file
 // ============================================================================
 using System.Text.Json;
+using Test_LinkedinAPI.ResponseModels;
 
-namespace Test_LinkedinAPI;
+namespace Test_LinkedinAPI.Services;
 
-public class UnipileApi : IDisposable
+public class UnipileService : IDisposable
 {
     private readonly HttpClient _http;
     private readonly string _dsn;
     private readonly string _accountId;
-    
+
     // 
-    public UnipileApi(string dsn, string apiKey, string accountId)
+    public UnipileService(string dsn, string apiKey, string accountId)
     {
         _dsn = dsn.TrimEnd('/');
         _accountId = accountId;
-        
+
         _http = new HttpClient();
         _http.DefaultRequestHeaders.Add("X-API-KEY", apiKey);
     }
-    
+
     // ==================================================================
     // Test Api Connection
     // ==================================================================
@@ -36,24 +37,26 @@ public class UnipileApi : IDisposable
         {
             var response = await _http.GetAsync($"{_dsn}/api/v1/accounts");
             var body = await response.Content.ReadAsStringAsync();
-            
+
             if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine("API key is VALID.");
                 return true;
-            } else
+            }
+            else
             {
                 Console.WriteLine($"API key is INVALID (HTTP {response.StatusCode}");
                 Console.WriteLine($"Response: {body}");
                 return false;
             }
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             Console.WriteLine($"Connection failed: {ex.Message}");
             return false;
         }
     }
-    
+
     // ==================================================================
     // Search Employees by Company Name
     // ==================================================================
@@ -74,21 +77,67 @@ public class UnipileApi : IDisposable
         var employeesUrl = $"https://www.linkedin.com/search/results/people/?keywords={encoded}" +
                            $"&currentCompany=%5B{Uri.EscapeDataString(companyId)}%5D";
 
-        await SearchLinkedInByUrlAsync(employeesUrl, companyName, keywordInput);
+        await GetPersonsLinkedInProfileByUrlAsync(employeesUrl, companyName, keywordInput);
     }
     
     // ==================================================================
     // Search Employees by Company Name
     // ==================================================================
-    public async Task SearchLinkedInByUrlAsync(string searchUrl, string companyName, string? keywordFilter = null)
+    /// <summary>
+    ///  Get employees from company using company keyword and person search keyword.
+    /// </summary>
+    /// <param name="companySearchKeywords"></param>
+    /// <param name="personSearchKeywords"></param>
+    /// <returns></returns>
+    public async Task<List<LinkedInProfile>> GetEmployeesByCompanyKeywordsAsync(string companySearchKeywords, string personSearchKeywords)
+    {
+        var companies = await GetCompaniesByKeywordsAsync(companySearchKeywords);
+
+        if (companies == null || companies.Count == 0)
+        {
+            return new List<LinkedInProfile>();
+        }
+
+        companies = companies.Take(10).ToList();
+
+        var profiles = new List<LinkedInProfile>();
+
+        foreach (var company in companies)
+        {
+            if (company == null)
+            {
+                continue;
+            }
+
+            var encoded = Uri.EscapeDataString(personSearchKeywords.Trim());
+            var employeesUrl = $"https://www.linkedin.com/search/results/people/?keywords={encoded}" +
+                               $"&currentCompany=%5B{Uri.EscapeDataString(company.Id)}%5D";
+
+
+            var ps = await GetPersonsLinkedInProfileByUrlAsync(employeesUrl, company.Name, personSearchKeywords);
+            if (ps.Count > 0)
+            {
+                profiles.AddRange(ps);
+            }
+        }
+
+        return profiles;
+    }
+
+    // ==================================================================
+    // Search Employees by Company Name
+    // ==================================================================
+    public async Task<List<LinkedInProfile>> GetPersonsLinkedInProfileByUrlAsync(string searchUrl, string companyName, string? keywordFilter = null)
     {
         try
         {
+            // plits keywords to array
             string[] keywords;
             if (string.IsNullOrWhiteSpace(keywordFilter))
             {
                 keywords = Array.Empty<string>();
-            } else
+            }
+            else
             {
                 keywords = keywordFilter
                     .ToLower()
@@ -96,27 +145,28 @@ public class UnipileApi : IDisposable
                     .Distinct()
                     .ToArray();
             }
-            
+            // gets page vars & search endpoint
             string? cursor = null;
             int page = 0;
-            var endpoint = $"{_dsn}/api/v1/linkedin/search?account_id={Uri.EscapeDataString((_accountId))}";
-            
+            var endpoint = $"{_dsn}/api/v1/linkedin/search?account_id={Uri.EscapeDataString(_accountId)}";
+
             var profiles = new List<LinkedInProfile>();
-            
+
+            // creates cancellation token source & token
             using var cts = new CancellationTokenSource();
             var token = cts.Token;
-            
+
             Console.WriteLine("Press ANY key to stop and save progress...\n");
-            
+
             _ = Task.Run(() =>
             {
                 Console.ReadKey(true);
                 cts.Cancel();
             });
-            
+
             int emptyMatchPages = 0;
             const int maxEmptyMatchPages = 150; // can change in future if want to searh longer
-            
+
             while (true)
             {
                 if (token.IsCancellationRequested)
@@ -124,55 +174,45 @@ public class UnipileApi : IDisposable
                     Console.WriteLine("\nStopping! Saving Progress...");
                     break;
                 }
-                
+
                 page++;
-                
+
+                // build payload w/ cursor par
                 object payload = string.IsNullOrWhiteSpace(cursor)
-                    ?  new { url = searchUrl }
-                    : new  { url = searchUrl, cursor = cursor};
-                
+                    ? new { url = searchUrl }
+                    : new { url = searchUrl, cursor };
+
+                // seralizes payload to json
                 var json = JsonSerializer.Serialize(payload);
                 using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
+                // post request & read reponse
                 using var response = await _http.PostAsync(endpoint, content);
                 var body = await response.Content.ReadAsStringAsync();
-                
+
                 if (!response.IsSuccessStatusCode)
                 {
                     Console.WriteLine($"LinkedIn search failed (HTTP {(int)response.StatusCode} {response.ReasonPhrase})");
                     Console.WriteLine($"Response: {body}");
                     break;
                 }
-                
-                using var doc = JsonDocument.Parse(body);
-                
-                if (!doc.RootElement.TryGetProperty("items", out var items) || items.ValueKind != JsonValueKind.Array)
-                {
-                    Console.WriteLine("LinkedIn search succeeded, but response didn't contain an 'items' array.");
-                    Console.WriteLine($"Raw response: {body}");
-                    break;
-                }
+
+                var resp = JsonSerializer.Deserialize<LinkedinSearchResponse>(body);
 
                 int pageAdded = 0;
 
-                foreach (var item in items.EnumerateArray())
+                foreach (var item in resp.Items)
                 {
-                    var name = item.TryGetProperty("name", out var n) ? n.GetString() : null;
-                    var profileUrl = item.TryGetProperty("profile_url", out var p) ? p.GetString() :
-                                    item.TryGetProperty("url", out var u) ? u.GetString() : null;
-                    var headline = item.TryGetProperty("headline", out var h) ? h.GetString() :
-                                  item.TryGetProperty("title", out var tt) ? tt.GetString() : null;
-
-                    if (string.IsNullOrWhiteSpace(profileUrl)) continue;
+                    if (string.IsNullOrWhiteSpace(item.ProfileUrl)) continue;
 
                     // Keyword filter
                     if (keywords.Length > 0)
                     {
-                        var text = $"{name} {headline}".ToLowerInvariant();
+                        var text = $"{item.Name} {item.Headline}".ToLowerInvariant();
                         if (!keywords.Any(word => text.Contains(word))) continue;
                     }
 
-                    var identifier = ExtractLinkedInPublicIdentifier(profileUrl);
+                    var identifier = ExtractLinkedInPublicIdentifier(item.ProfileUrl);
 
                     string? email = null;
                     string? phone = null;
@@ -198,11 +238,12 @@ public class UnipileApi : IDisposable
 
                     // if found prints prf details w/ headline
                     Console.WriteLine(
-                        $"name={name ?? "null"} | headline={headline ?? "null"} | company={company ?? "null"} | title={jobTitle ?? "null"} | " +
-                        $"email={(hasEmail ? email : "null")} | phone={(hasPhone ? phone : "null")} | url={profileUrl}"
+                        $"name={item.Name ?? "null"} | headline={item.Headline ?? "null"} | company={item.Company?.Name ?? "null"} | title={jobTitle ?? "null"} | " +
+                        $"email={(hasEmail ? email : "null")} | phone={(hasPhone ? phone : "null")} | url={item.ProfileUrl}"
                     );
 
-                    profiles.Add(new LinkedInProfile(name, company, jobTitle, profileUrl, email, phone));
+                    // add to csv
+                    profiles.Add(new LinkedInProfile(item.Name, company, jobTitle, item.ProfileUrl, email, phone));
                     pageAdded++;
                 }
 
@@ -223,7 +264,7 @@ public class UnipileApi : IDisposable
 
                 Console.WriteLine($"Page {page} complete | added {pageAdded} | total {profiles.Count}");
 
-                cursor = doc.RootElement.TryGetProperty("cursor", out var c) ? c.GetString() : null;
+                cursor = resp.Cursor;
 
                 if (string.IsNullOrWhiteSpace(cursor))
                 {
@@ -232,22 +273,14 @@ public class UnipileApi : IDisposable
                 }
             }
 
-            if (profiles.Count > 0)
-            {
-                var fileName = $"{companyName.Trim()}_results_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
-                var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
-                await ExportProfilesToCsvAsync(profiles, filePath);
-                Console.WriteLine($"\nExported {profiles.Count} profiles to: {filePath}");
-            }
-            else
-            {
-                Console.WriteLine("Not exporting. 0 profiles with contact info found.");
-            }
+            return profiles;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error running LinkedIn search: {ex.Message}");
         }
+
+        return new List<LinkedInProfile>();
     }
     // ==================================================================
     // Get Company ID from Company Name
@@ -257,19 +290,19 @@ public class UnipileApi : IDisposable
         // makes company name safe for URL use
         var encoded = Uri.EscapeDataString(companyName.Trim());
         var companySearchUrl = $"https://www.linkedin.com/search/results/companies/?keywords={encoded}";
-        
+
         // builds api endpoint w/ acc id
         var endpoint = $"{_dsn}/api/v1/linkedin/search?account_id={Uri.EscapeDataString(_accountId)}";
-        
+
         // packages search url in json
-        var payload = new {url = companySearchUrl};
-        var json = JsonSerializer.Serialize((payload));
+        var payload = new { url = companySearchUrl };
+        var json = JsonSerializer.Serialize(payload);
         using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-        
+
         // sends request & read repsonse
         using var response = await _http.PostAsync(endpoint, content);
         var body = await response.Content.ReadAsStringAsync();
-        
+
         // fail check
         if (!response.IsSuccessStatusCode)
         {
@@ -277,48 +310,49 @@ public class UnipileApi : IDisposable
             Console.WriteLine($"Response: {body}");
             return null;
         }
-        
-        // verify if array exists
-        using var doc = JsonDocument.Parse(body);
-        if (!doc.RootElement.TryGetProperty("items", out var items) || items.ValueKind != JsonValueKind.Array)
+
+        var resp = JsonSerializer.Deserialize<LinkedinSearchResponse>(body);
+
+        var companies = resp.Items.Where(x => x.Type == "COMPANY").ToList();
+
+        return companies.FirstOrDefault().Id;
+    }
+
+    public async Task<List<Item?>> GetCompaniesByKeywordsAsync(string keywords)
+    {
+        // makes company name safe for URL use
+        var encoded = Uri.EscapeDataString(keywords.Trim());
+        var companySearchUrl = $"https://www.linkedin.com/search/results/companies/?keywords={encoded}";
+
+        // builds api endpoint w/ acc id
+        var endpoint = $"{_dsn}/api/v1/linkedin/search?account_id={Uri.EscapeDataString(_accountId)}";
+
+        // packages search url in json
+        var payload = new { url = companySearchUrl };
+        var json = JsonSerializer.Serialize(payload);
+        using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+        // sends request & read repsonse
+        using var response = await _http.PostAsync(endpoint, content);
+        var body = await response.Content.ReadAsStringAsync();
+
+        // fail check
+        if (!response.IsSuccessStatusCode)
         {
-            Console.WriteLine("Company search succeeded, but response didn't contain an 'items' array.");
             return null;
         }
 
-        // prints searched company's info
-        Console.WriteLine("\n\nCompany Results:");
-        Console.WriteLine("----------------");
-        int shown = 0;
-        foreach (var item in items.EnumerateArray())
-        {
-            var name = item.TryGetProperty("name", out var n) ? n.GetString() : null;
-            var id = item.TryGetProperty("id", out var i) ? i.GetString() : null;
-            var url = item.TryGetProperty("profile_url", out var p) ? p.GetString() :
-                item.TryGetProperty("url", out var u) ? u.GetString() : null;
+        var resp = JsonSerializer.Deserialize<LinkedinSearchResponse>(body);
 
-            if (!string.IsNullOrWhiteSpace(name) || !string.IsNullOrWhiteSpace(id))
-            {
-                Console.WriteLine($"[{shown + 1}] {name ?? "(no name)"}");
-                if (!string.IsNullOrWhiteSpace(id)) Console.WriteLine($"     ID: {id}");
-                if (!string.IsNullOrWhiteSpace(url)) Console.WriteLine($"     URL: {url}");
-                Console.WriteLine();
-                shown++;
-            }
-            if (shown >= 1) break;
-        }
+        var companies = resp.Items.Where(x => x.Type == "COMPANY").ToList();
 
-        // get first company's id
-        var first = items.GetArrayLength() > 0 ? items[0] : default;
-        if (first.ValueKind == JsonValueKind.Undefined) return null;
-
-        return first.TryGetProperty("id", out var firstId) ? firstId.GetString() : null;
+        return companies;
     }
-    
+
     // ==================================================================
     // Get Contact Info from Linkedin Profile
     // ==================================================================
-     public async Task<ProfileData> GetContactInfoAsync(string identifier)
+    public async Task<ProfileData> GetContactInfoAsync(string identifier)
     {
         // builds profile fetch url with identifier
         var url = $"{_dsn}/api/v1/users/{Uri.EscapeDataString(identifier)}" +
@@ -410,11 +444,11 @@ public class UnipileApi : IDisposable
 
         return new ProfileData(email, phone, company, jobTitle);
     }
-     
+
     // ==================================================================
     // Helper Methods
     // ==================================================================
-    
+
     // get username from profile url
     private static string? ExtractLinkedInPublicIdentifier(string? url)
     {
@@ -443,7 +477,7 @@ public class UnipileApi : IDisposable
     }
 
     // writes profile data to csv
-    private static async Task ExportProfilesToCsvAsync(IEnumerable<LinkedInProfile> profiles, string filePath)
+    public async Task ExportProfilesToCsvAsync(IEnumerable<LinkedInProfile> profiles, string filePath)
     {
         var sb = new System.Text.StringBuilder();
         sb.AppendLine("name,company,title,email,phone,url");
