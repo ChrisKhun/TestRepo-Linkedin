@@ -4831,11 +4831,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\TestRepo-Linkedin\\Test-LinkedinAPI\\Test-LinkedinAPI.csproj",
+      "projectUniqueName": "F:\\Github Projects\\TestRepo-Linkedin\\Test-LinkedinAPI\\Test-LinkedinAPI.csproj",
       "projectName": "Test-LinkedinAPI",
-      "projectPath": "F:\\TestRepo-Linkedin\\Test-LinkedinAPI\\Test-LinkedinAPI.csproj",
+      "projectPath": "F:\\Github Projects\\TestRepo-Linkedin\\Test-LinkedinAPI\\Test-LinkedinAPI.csproj",
       "packagesPath": "C:\\Users\\mcjuk\\.nuget\\packages\\",
-      "outputPath": "F:\\TestRepo-Linkedin\\Test-LinkedinAPI\\obj\\",
+      "outputPath": "F:\\Github Projects\\TestRepo-Linkedin\\Test-LinkedinAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
